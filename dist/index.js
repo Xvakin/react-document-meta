@@ -1,10 +1,12 @@
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _react = require('react');
 
@@ -21,8 +23,6 @@ var _reactSideEffect2 = _interopRequireDefault(_reactSideEffect);
 var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
@@ -108,14 +108,26 @@ function parseTags(tagName) {
     Object.keys(group).forEach(function (key) {
       var values = Array.isArray(group[key]) ? group[key] : [group[key]];
       values.forEach(function (value) {
-        var _tags$push2;
-
         if (value === null) {
           return;
         }
-        tags.push((_tags$push2 = {
-          tagName: tagName
-        }, _defineProperty(_tags$push2, groupKey, key), _defineProperty(_tags$push2, contentKey, value), _tags$push2));
+        if (typeof value === 'string') {
+          var _tags$push2;
+
+          tags.push((_tags$push2 = {
+            tagName: tagName
+          }, _defineProperty(_tags$push2, groupKey, key), _defineProperty(_tags$push2, contentKey, value), _tags$push2));
+        } else {
+          (function () {
+            var attrs = _defineProperty({
+              tagName: tagName
+            }, groupKey, key);
+            Object.keys(value).forEach(function (attr) {
+              attrs[attr] = value[attr];
+            });
+            tags.push(attrs);
+          })();
+        }
       });
     });
   });
@@ -211,7 +223,7 @@ var DocumentMeta = _react2.default.createClass({
     description: _react2.default.PropTypes.string,
     canonical: _react2.default.PropTypes.string,
     meta: _react2.default.PropTypes.objectOf(_react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.objectOf(_react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.string)]))])),
-    link: _react2.default.PropTypes.objectOf(_react2.default.PropTypes.objectOf(_react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.string)]))),
+    link: _react2.default.PropTypes.objectOf(_react2.default.PropTypes.objectOf(_react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.arrayOf(_react2.default.PropTypes.oneOfType([_react2.default.PropTypes.string, _react2.default.PropTypes.objectOf(_react2.default.PropTypes.string)]))]))),
     auto: _react2.default.PropTypes.objectOf(_react2.default.PropTypes.bool)
   },
 

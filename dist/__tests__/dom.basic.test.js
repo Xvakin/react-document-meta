@@ -38,7 +38,8 @@ describe('DocumentMeta - DOM basic', function () {
     },
     link: {
       rel: {
-        stylesheet: ['http://domain.tld/css/vendor.css', 'http://domain.tld/css/styles.css']
+        stylesheet: ['http://domain.tld/css/vendor.css', 'http://domain.tld/css/styles.css'],
+        alternate: [{ href: '/alternate/us', hreflang: 'en-us' }, { href: '/alternate/gb', hreflang: 'en-gb' }]
       }
     }
   };
@@ -72,11 +73,18 @@ describe('DocumentMeta - DOM basic', function () {
   });
 
   it('should render normal link tags, eg. <link rel="..." href="...">', function () {
-    Object.keys(DOC_META.link.rel).reduce(function (rel) {
+    Object.keys(DOC_META.link.rel).forEach(function (rel) {
       var values = Array.isArray(DOC_META.link.rel[rel]) ? DOC_META.link.rel[rel] : [DOC_META.link.rel[rel]];
       var elements = (0, _testUtils.getElements)('link[rel=' + rel + ']');
-      elements.forEach(function (element, idx) {
-        _assert2.default.strictEqual(element.getAttribute('content'), values[idx], '<link rel="' + rel + '" ... /> has not been rendered correctly');
+      Object.keys(elements).forEach(function (idx) {
+        var element = elements[idx];
+        if (typeof values[idx] === 'string') {
+          _assert2.default.strictEqual(element.getAttribute('href'), values[idx], '<link rel="' + rel + '" ... /> has not been rendered correctly');
+        } else {
+          Object.keys(values[idx]).forEach(function (attr) {
+            _assert2.default.strictEqual(element.getAttribute(attr), values[idx][attr], '<link rel="' + rel + '" ' + attr + '="..." ... /> has not been rendered correctly');
+          });
+        }
       });
     });
   });
